@@ -63,8 +63,4 @@ Author: Antti Luode | PerceptionLab, Finland
 
 Status: Preprint / Experimental Simulation
 
-The fractal is listening. The archipelago is alive.
-
-**Requirements:**
-```bash
-pip install numpy pandas scipy matplotlib mne
+# The fractal is listening. The archipelago is alive.
