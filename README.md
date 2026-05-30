@@ -40,6 +40,7 @@ No installation required. Simply download `sim.html` and open it in any modern w
 To run the Python processor on your own EEG or time-series data:
 
 **Requirements:**
+
 ```bash
 pip install numpy pandas scipy matplotlib mne
 ```
@@ -49,9 +50,8 @@ Execution:
 ```Bash
 python archipelago_model.py
 ```
-(Note: Rename the provided deepseek_python_...py script to archipelago_model.py or run your specific filename).
 
-🔗 Relation to the Geometric Neuron Ecosystem
+#  Relation to the Geometric Neuron Ecosystem
 
 This repository serves as the overarching physical and mathematical framework for the broader PerceptionLab ecosystem:
 
