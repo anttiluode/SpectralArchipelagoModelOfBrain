@@ -1,7 +1,7 @@
 # The Spectral Archipelago
 **Koopman Oceans, Moiré Addresses, and the Physics of the Geometric Neuron**
 
-![Archipelago Dynamics](archipelago_dynamics.jpg)
+![Archipelago Dynamics](archipelago_dynamics.png)
 
 Standard models of neural computation treat neurons as integrate-and-fire devices that encode information in spike rates. This repository proposes and simulates an alternative framework: **The Spectral Archipelago**. 
 
