@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Spectral Archipelago Lab</title>
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --panel-bg: #1f2833;
+            --text-main: #c5c6c7;
+            --accent: #66fcf1;
+            --accent-dim: #45a29e;
+            --theta-color: #ff3366;
+            --alpha-color: #33ccff;
+            --gamma-color: #ffff33;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            padding: 15px 20px;
+            background-color: var(--panel-bg);
+            border-bottom: 2px solid var(--accent-dim);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .controls {
+            width: 300px;
+            background-color: var(--panel-bg);
+            padding: 20px;
+            border-right: 1px solid var(--accent-dim);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            overflow-y: auto;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--accent);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: #333;
+            height: 6px;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+        }
+
+        .visualizer-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .canvas-container {
+            flex: 1;
+            background: #000;
+            border: 1px solid var(--accent-dim);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .panel-title {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 0.8rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 10;
+        }
+
+        .description {
+            font-size: 0.85rem;
+            line-height: 1.4;
+            color: #aaa;
+            background: rgba(0,0,0,0.2);
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 3px solid var(--accent-dim);
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>The Spectral Archipelago</h1>
+        <div style="font-size: 0.9rem;">Holographic Neuron Dynamics</div>
+    </header>
+
+    <div class="container">
+        <div class="controls">
+            <div class="description">
+                <b>Theory:</b> Thermal noise resonates within the dendrite's geometry, creating phase-locked Spectral Islands. The Axon Initial Segment (AIS) tunes to these islands, broadcasting their Moiré interference addresses as spikes.
+            </div>
+
+            <div class="control-group">
+                <label>
+                    <span>Thermal Noise (Johnson)</span>
+                    <span id="noiseVal">0.50</span>
+                </label>
+                <input type="range" id="noiseSlider" min="0" max="1" step="0.01" value="0.5">
+                <div style="font-size: 0.75rem; color: #888;">0.5 is optimal for Stochastic Resonance.</div>
+            </div>
+
+            <div class="control-group">
+                <label>
+                    <span>Ephaptic Coupling</span>
+                    <span id="couplingVal">0.10</span>
+                </label>
+                <input type="range" id="couplingSlider" min="0" max="1" step="0.01" value="0.1">
+                <div style="font-size: 0.75rem; color: #888;">How much the islands leak into one another.</div>
+            </div>
+
+            <hr style="border-color: var(--accent-dim); width: 100%; opacity: 0.3;">
+
+            <div class="control-group">
+                <label style="color: #fff;">
+                    <span>AIS Tuning Frequency (Hz)</span>
+                    <span id="tuneVal">9.0 Hz</span>
+                </label>
+                <input type="range" id="tuneSlider" min="4" max="26" step="0.1" value="9.0">
+                <div style="font-size: 0.75rem; color: #888;">
+                    Theta: 6Hz | Alpha: 12Hz | Gamma: 24Hz<br>
+                    <i>Tune between islands to see Moiré addresses.</i>
+                </div>
+            </div>
+            
+            <div class="description" style="margin-top: auto; border-left-color: var(--theta-color);">
+                ■ Theta Island (Calcium channels)<br>
+                <span style="color: var(--alpha-color);">■</span> Alpha Island (Mixed modes)<br>
+                <span style="color: var(--gamma-color);">■</span> Gamma Island (Fast Sodium)
+            </div>
+        </div>
+
+        <div class="visualizer-area">
+            <div class="canvas-container">
+                <div class="panel-title">The Koopman Ocean (Dendritic Phase Space)</div>
+                <canvas id="oceanCanvas"></canvas>
+            </div>
+
+            <div class="canvas-container">
+                <div class="panel-title">AIS Tuner & Axon Output (The Broadcast Address)</div>
+                <canvas id="axonCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Core Physics Parameters ---
+        const islands = [
+            { name: "Theta", freq: 6, color: "#ff3366", xPos: 0.2, yPos: 0.5 },
+            { name: "Alpha", freq: 12, color: "#33ccff", xPos: 0.5, yPos: 0.5 },
+            { name: "Gamma", freq: 24, color: "#ffff33", xPos: 0.8, yPos: 0.5 }
+        ];
+
+        let time = 0;
+        const dt = 0.01;
+
+        // --- DOM Elements ---
+        const noiseSlider = document.getElementById('noiseSlider');
+        const couplingSlider = document.getElementById('couplingSlider');
+        const tuneSlider = document.getElementById('tuneSlider');
+        
+        const noiseVal = document.getElementById('noiseVal');
+        const couplingVal = document.getElementById('couplingVal');
+        const tuneVal = document.getElementById('tuneVal');
+
+        const oceanCanvas = document.getElementById('oceanCanvas');
+        const axonCanvas = document.getElementById('axonCanvas');
+        const ctxOcean = oceanCanvas.getContext('2d');
+        const ctxAxon = axonCanvas.getContext('2d');
+
+        // History for the oscilloscope
+        const historyLength = 800;
+        let axonHistory = new Array(historyLength).fill(0);
+        let spikeThreshold = 1.2;
+
+        // Resize handler
+        function resize() {
+            oceanCanvas.width = oceanCanvas.parentElement.clientWidth;
+            oceanCanvas.height = oceanCanvas.parentElement.clientHeight;
+            axonCanvas.width = axonCanvas.parentElement.clientWidth;
+            axonCanvas.height = axonCanvas.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // --- Math Helpers ---
+        // Stochastic Resonance: Curve that peaks at noise = 0.5
+        function getStochasticAmplitude(noise) {
+            // Gaussian bell curve centered at 0.5
+            return Math.exp(-Math.pow(noise - 0.5, 2) / 0.05);
+        }
+
+        // Tuning Weight: How much the AIS "hears" an island based on frequency distance
+        function getTuningWeight(targetFreq, islandFreq) {
+            // Gaussian bandpass filter
+            const bandwidth = 3.0; 
+            return Math.exp(-Math.pow(targetFreq - islandFreq, 2) / (2 * Math.pow(bandwidth, 2)));
+        }
+
+        // --- Main Animation Loop ---
+        function animate() {
+            time += dt;
+
+            // Update UI Labels
+            const noise = parseFloat(noiseSlider.value);
+            const coupling = parseFloat(couplingSlider.value);
+            const tuneFreq = parseFloat(tuneSlider.value);
+
+            noiseVal.innerText = noise.toFixed(2);
+            couplingVal.innerText = coupling.toFixed(2);
+            tuneVal.innerText = tuneFreq.toFixed(1) + " Hz";
+
+            const globalAmp = getStochasticAmplitude(noise);
+
+            // 1. Calculate Island States
+            let islandVals = [];
+            for (let i = 0; i < islands.length; i++) {
+                // Pure frequency
+                let val = Math.cos(time * islands[i].freq);
+                
+                // Add noise jitter
+                val += (Math.random() - 0.5) * noise * 2; 
+                
+                islandVals.push(val);
+            }
+
+            // Apply Ephaptic Coupling (Cross-talk)
+            let coupledVals = [...islandVals];
+            for (let i = 0; i < islands.length; i++) {
+                let neighborSum = 0;
+                for (let j = 0; j < islands.length; j++) {
+                    if (i !== j) neighborSum += islandVals[j];
+                }
+                coupledVals[i] = (islandVals[i] * (1 - coupling)) + (neighborSum * (coupling / 2));
+                coupledVals[i] *= globalAmp; // Scale by stochastic resonance
+            }
+
+            // --- DRAW OCEAN ---
+            ctxOcean.fillStyle = 'rgba(0, 0, 0, 0.2)'; // Fade effect for trails
+            ctxOcean.fillRect(0, 0, oceanCanvas.width, oceanCanvas.height);
+
+            // Draw connections (Ephaptic links)
+            if (coupling > 0) {
+                ctxOcean.beginPath();
+                ctxOcean.moveTo(oceanCanvas.width * islands[0].xPos, oceanCanvas.height * islands[0].yPos);
+                ctxOcean.lineTo(oceanCanvas.width * islands[1].xPos, oceanCanvas.height * islands[1].yPos);
+                ctxOcean.lineTo(oceanCanvas.width * islands[2].xPos, oceanCanvas.height * islands[2].yPos);
+                ctxOcean.strokeStyle = `rgba(102, 252, 241, ${coupling})`;
+                ctxOcean.lineWidth = 2 + (coupling * 5);
+                ctxOcean.stroke();
+            }
+
+            // Draw Islands
+            for (let i = 0; i < islands.length; i++) {
+                const x = oceanCanvas.width * islands[i].xPos;
+                const y = oceanCanvas.height * islands[i].yPos;
+                const radius = 30 + (coupledVals[i] * 20); // Pulse with the signal
+                
+                // Draw glow
+                const grad = ctxOcean.createRadialGradient(x, y, 0, x, y, radius * 2);
+                grad.addColorStop(0, islands[i].color);
+                grad.addColorStop(1, 'transparent');
+                
+                ctxOcean.fillStyle = grad;
+                ctxOcean.beginPath();
+                ctxOcean.arc(x, y, radius * 2, 0, Math.PI * 2);
+                ctxOcean.fill();
+
+                // Draw core
+                ctxOcean.fillStyle = '#fff';
+                ctxOcean.beginPath();
+                ctxOcean.arc(x, y, 5, 0, Math.PI * 2);
+                ctxOcean.fill();
+                
+                // Label
+                ctxOcean.fillStyle = '#ccc';
+                ctxOcean.font = '12px sans-serif';
+                ctxOcean.textAlign = 'center';
+                ctxOcean.fillText(`${islands[i].name} (${islands[i].freq}Hz)`, x, y + 40);
+            }
+
+            // --- CALCULATE AXON OUTPUT ---
+            let axonSignal = 0;
+            for (let i = 0; i < islands.length; i++) {
+                let weight = getTuningWeight(tuneFreq, islands[i].freq);
+                axonSignal += coupledVals[i] * weight;
+            }
+
+            // Add signal to history
+            axonHistory.push(axonSignal);
+            if (axonHistory.length > historyLength) {
+                axonHistory.shift(); // Remove oldest
+            }
+
+            // --- DRAW AXON OUTPUT ---
+            ctxAxon.clearRect(0, 0, axonCanvas.width, axonCanvas.height);
+            
+            // Draw grid lines
+            ctxAxon.strokeStyle = 'rgba(255,255,255,0.1)';
+            ctxAxon.beginPath();
+            ctxAxon.moveTo(0, axonCanvas.height / 2);
+            ctxAxon.lineTo(axonCanvas.width, axonCanvas.height / 2);
+            ctxAxon.stroke();
+
+            // Draw Threshold lines
+            ctxAxon.strokeStyle = 'rgba(255, 51, 102, 0.4)';
+            ctxAxon.setLineDash([5, 5]);
+            const threshY_up = axonCanvas.height / 2 - (spikeThreshold * 40);
+            const threshY_down = axonCanvas.height / 2 + (spikeThreshold * 40);
+            ctxAxon.beginPath();
+            ctxAxon.moveTo(0, threshY_up); ctxAxon.lineTo(axonCanvas.width, threshY_up);
+            ctxAxon.moveTo(0, threshY_down); ctxAxon.lineTo(axonCanvas.width, threshY_down);
+            ctxAxon.stroke();
+            ctxAxon.setLineDash([]);
+
+            // Draw wave
+            ctxAxon.beginPath();
+            ctxAxon.strokeStyle = '#66fcf1';
+            ctxAxon.lineWidth = 2;
+            
+            const sliceWidth = axonCanvas.width / historyLength;
+            
+            for (let i = 0; i < historyLength; i++) {
+                const x = i * sliceWidth;
+                const v = axonHistory[i];
+                let y = (axonCanvas.height / 2) - (v * 40); // Scale amplitude for display
+
+                // Check for Spikes (if wave crosses threshold, draw a sharp vertical line)
+                if (Math.abs(v) > spikeThreshold && i > 0 && Math.abs(axonHistory[i-1]) <= spikeThreshold) {
+                    ctxAxon.lineTo(x, y - 80 * Math.sign(v)); // Spike drawing
+                    ctxAxon.strokeStyle = '#fff'; // Flash white on spike
+                } else {
+                    ctxAxon.strokeStyle = '#66fcf1';
+                }
+
+                if (i === 0) {
+                    ctxAxon.moveTo(x, y);
+                } else {
+                    ctxAxon.lineTo(x, y);
+                }
+            }
+            ctxAxon.stroke();
+
+            // Draw Tuner Position Indicator (Visualizer of the Bandpass filter)
+            // It draws a bell curve overlay showing what frequencies the AIS is currently "listening" to.
+            ctxAxon.fillStyle = 'rgba(102, 252, 241, 0.1)';
+            ctxAxon.beginPath();
+            for(let f = 4; f <= 26; f += 0.5) {
+                let x = ((f - 4) / 22) * axonCanvas.width;
+                let w = getTuningWeight(tuneFreq, f) * 50;
+                if(f === 4) ctxAxon.moveTo(x, axonCanvas.height);
+                ctxAxon.lineTo(x, axonCanvas.height - w);
+            }
+            ctxAxon.lineTo(axonCanvas.width, axonCanvas.height);
+            ctxAxon.fill();
+            
+            ctxAxon.fillStyle = 'var(--accent)';
+            ctxAxon.fillText(`AIS Focus Filter: ${tuneFreq.toFixed(1)} Hz`, 20, axonCanvas.height - 10);
+
+            requestAnimationFrame(animate);
+        }
+
+        // Start
+        animate();
+
+    </script>
+</body>
+</html>
